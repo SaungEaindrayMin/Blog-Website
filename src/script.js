@@ -32,3 +32,10 @@ loginOpenModal.addEventListener("click", () => {
 loginCloseModal.addEventListener("click", () => {
   loginModal.classList.add("hidden");
 });
+
+const Password = document.getElementByID("password");
+Password.addEventListener("click", (event) => {
+event.preventDefault();
+
+console.log("Hello")
+});

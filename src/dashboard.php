@@ -1,3 +1,27 @@
+<?php
+
+include("connection.php");
+
+if(isset($_POST["submit"])){
+
+  $title = $_POST["title"];
+  $description = $_POST["description"];
+  $body = $_POST["body"];
+
+
+  $valcreate="SELECT PostTitle FROM Posttbl WHERE PostTitle = '$title'";
+  $valquery= mysqli_query($connection,$valcreate);
+  $count = mysqli_num_rows($valquery);
+  if($count == 0)
+  {
+    $create = "INSERT INTO Posttbl (PostImage,PostTitle,PostDescription,PostBody) VALUES ('','$title','$description','$body')";
+    $createQuery=mysqli_query($connection,$create);
+  }
+}
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
   <head>
@@ -10,9 +34,9 @@
     <main class=" grid">
       <!-- start top bar section  -->
 
-      <section class="relative">
+      <section class="relative bg-[#F7F7F7]/20">
       <div
-        class="flex fixed z-10 w-full justify-between items-center p-4 bg-white top-0 shadow-md shadow-[#808080]/20"
+        class="flex fixed z-10 w-full  justify-between items-center p-4 bg-white/20 top-0 shadow-md shadow-[#808080]/20"
       >
         <h1 class="text-2xl font-semibold text-[#6F00FF]">Blog Website</h1>
 
@@ -47,9 +71,9 @@
       <!-- end top bar section  -->
 
       <!-- start side bar section  -->
-       <div class="flex  relative ">
+       <div class="flex  relative  bg-[#F7F7F7]/20">
       <section
-        class="bg-[#F7F7F7] mt-[6.4%] fixed  justify-between items-center  "
+        class="bg-[#F7F7F7]/20 mt-[6.4%] fixed  justify-between items-center  "
       >
         <div
           class="shadow-md text-black  p-4  h-screen rounded-r-lg"
@@ -147,18 +171,29 @@
             </div>
           </div>
 
+          <form action="dashboard.php" method="POST">
+
           <div class="grid gap-5 lg:gap-8">
             <div class="grid gap-5 w-full">
+            <?php
+              if ($count == 1){
+                echo "<span>Title is already exist<span>";
+              }
+              ?> <br>
               <h2 class="font-semibold text-lg">Title</h2>
               <input
+                id="title"
+                name="title"
                 type="text"
                 class="input input-md w-full bg-[#5E5E5E]/10"
               />
             </div>
 
             <div class="grid gap-5 w-full">
-                <h2 class="font-semibold text-lg">Sub-Title</h2>
+                <h2 class="font-semibold text-lg">description</h2>
                 <input
+                  id="description"
+                  name="description"
                   type="text"
                   class="input input-md w-full bg-[#5E5E5E]/10"
                 />
@@ -167,26 +202,29 @@
           </div>
 
           <div class="grid gap-5">
-            <h2 class="font-semibold text-lg">Description</h2>
+            <h2 class="font-semibold text-lg">Body</h2>
             <textarea
+              id="body"
+              name="body"
               class="textarea w-full bg-[#5E5E5E]/10"
               rows="4"
             ></textarea>
           </div>
+        
 
-          <div class="grid  lg:gap-3">
+          <div class="grid lg:gap-3">
             
 
             <div class="w-full h-full grid items-end justify-end">
-              <a href=""
-                ><button
-                  class="btn btn-md bg-[#6F00FF] hover:bg-[#6F00FF]/80 text-white"
-                >
-                  Continue
-                </button></a
-              >
-            </div>
-          </div>
+            <input
+           
+           class="p-2 text-lg text-center mt-8 w-full font-semibold bg-[#6F00FF] rounded-lg text-white hover:bg-[#6F00FF]/60"
+           type="submit"
+           name="submit"
+
+         ></div>
+
+          </form>
         </div>
       </section>
 

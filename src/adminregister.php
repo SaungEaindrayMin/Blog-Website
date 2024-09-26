@@ -1,24 +1,30 @@
 <?php
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$databasename= "BlogWebsite";
-
-
-$connection = new mysqli($servername,$username,$password,$databasename);
+include("connection.php");
 
 if(isset($_POST["adminLogin"])){
   $username = $_POST["adminNameRegister"];
   $email = $_POST["adminEmailRegister"];
+  $position =$_POST["adminPositionRegister"];
+  $date=$_POST["adminDateRegister"];
   $password = $_POST ["adminPasswordRegister"];
-
-  $insert = "INSERT INTO Admintbl (AdminName,AdminEmail,AdminPassword) VALUES ('$username','$email','$password')";
-
-  $query = mysqli_query($connection,$insert);
+  $Adminencrypted = password_hash($password,PASSWORD_DEFAULT);
+  $valcheck = "SELECT AdminEmail FROM Admintbl WHERE AdminEmail = '$email'";
+  $valquery = mysqli_query($connection,$valcheck);
+  $valcount = mysqli_num_rows($valquery);
+  if($valcount == 0)
+  {
+    $insert = "INSERT INTO Admintbl (AdminName,AdminEmail,AdminPosition,AdminDate,AdminPassword) VALUES ('$username','$email','$position','$date','$Adminencrypted')";
+    $query = mysqli_query($connection,$insert);
+  }
 }
 
-?>  
+$adminSelect = "SELECT * FROM Admintbl";
+$adminQuery = mysqli_query($connection,$adminSelect);
+$adminCount=mysqli_num_rows($adminQuery);
+
+
+?> 
 
 
 <!DOCTYPE html>
@@ -40,7 +46,7 @@ if(isset($_POST["adminLogin"])){
           <h1 class="text-2xl font-semibold text-[#6F00FF]">Blog Website</h1>
   
           <div class="flex items-center gap-3">
-            <button class="bg-[#808080]/10 rounded-full p-2">
+            <button class="bg-[#808080]/20 rounded-full p-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -72,7 +78,7 @@ if(isset($_POST["adminLogin"])){
         <!-- start side bar section  -->
          <div class="flex  relative ">
         <section
-          class="bg-[#F7F7F7] mt-[6.4%] fixed  justify-between items-center  "
+          class="bg-[#F7F7F7] mt-[6.4%] fixed  justify-between items-center hidden lg:block  "
         >
           <div
             class="shadow-md text-black  p-4  h-screen rounded-r-lg"
@@ -140,11 +146,11 @@ if(isset($_POST["adminLogin"])){
   
         <!-- start create post div  -->
   
-        <section class=" mt-20 w-[90%]  md:w-[70%]  mx-auto ">
+        <section class=" grid lg:flex gap-8   justify-center  mt-20 w-[90%] md:w-full  mx-auto ">
           <div
-            class="grid gap-5 mt-3 lg:mt-8 bg-white  rounded-lg "
+            class="grid  gap-5 mt-3 lg:mt-8 bg-white   rounded-lg "
           >
-          <div class="grid justify-between items-center gap-4 ">
+          <div class="grid justify-between items-center gap-4  mx-auto">
             <h1 class="text-2xl  md:text-5xl text-[#6F00FF] font-semibold text-center">Admin Register</h1>
   
             <form action="adminregister.php" method="POST" class="grid gap-3">
@@ -155,13 +161,35 @@ if(isset($_POST["adminLogin"])){
                 class="outline-none border-b-[2px] border-[#6F00FF] p-2"
               />
 
+              <?php
+              if ($valcount == 1){
+                echo "<span>Email is already exist<span>";
+              }
+              ?> <br>
               <input
                 type="email"
                 name="adminEmailRegister"
                 placeholder="Enter your email"
                 class="outline-none border-b-[2px] border-[#6F00FF] p-2"
               />
+
+              <br>
+              <input
+                type="text"
+                name="adminPositionRegister"
+                placeholder="Enter your position"
+                class="outline-none border-b-[2px] border-[#6F00FF] p-2"
+              />
+
+              <br>
+              <input
+                type="text"
+                name="adminDateRegister"
+                placeholder="Enter your start Date"
+                class="outline-none border-b-[2px] border-[#6F00FF] p-2"
+              />
   
+              <br>
               <input
                 type="password"
                 name="adminPasswordRegister"
@@ -177,11 +205,158 @@ if(isset($_POST["adminLogin"])){
             </form>
           </div>
           </div>
+
+          <!-- start admin table  -->
+          
+           
+          <section class="mt-3 lg:mt-8 bg-white  rounded-lg">
+
+
+          <table class="">
+  <thead class="bg-[#6F00FF]">
+    <tr>
+      <th class="px-4 py-2 border  text-left text-white">Name</th>
+      <th class="px-4 py-2 border  text-left text-white">Email</th>
+      <th class="px-4 py-2 border  text-left text-white">Position</th>
+      <th class="px-4 py-2 border  text-left text-white">Date</th>
+      <th class="px-4 py-2 border  text-left text-white">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+  <?php
+
+for ($i = 0; $i < $adminCount; $i++)
+{
+ $data = mysqli_fetch_assoc($adminQuery)
+
+ ?>
+    <tr class="hover:bg-gray-50">
+  
+      <td class="px-4 py-2 border "><?php echo $data['AdminName'] ?></td>
+      <td class="px-4 py-2 border "><?php echo $data['AdminEmail'] ?></td>
+      <td class="px-4 py-2 border "><?php echo $data['AdminPosition'] ?></td>
+      <td class="px-4 py-2 border "><?php echo $data['AdminDate'] ?></td>
+      <td class="px-4 py-2 border ">
+        <a href="adminregister.php?AdminID=<?php echo $data['AdminID'] ?>" class="p-2 bg-[#00FF00]  rounded-lg ">Edit</a>
+        <a class="p-2 bg-[#ED1B24] text-white rounded-lg ">Delete</a>
+      </td>
+
+    </tr>
+    <?php } ?>
+  
+  </tbody>
+</table>
+        </section>
+       
+        <!-- end admin table  -->
+
+
+        
+
+
+
         </section>
   
       </div>
+
+      <!-- start edit section  -->
+
+      <div class="grid justify-between items-center w-[70%] gap-4 mt-14  mx-auto">
+            <h1 class="text-2xl  md:text-5xl text-[#6F00FF] font-semibold text-center">Edit Admin Register</h1>
+  
+            <?php 
+              if (isset($_GET['AdminID'])){
+                $edit = $_GET['AdminID'];
+
+              $editData = "SELECT * FROM Admintbl WHERE AdminID = '$edit'";
+              $editDataQuery = mysqli_query($connection,$editData);
+              $EditData = mysqli_fetch_assoc($editDataQuery);
+              }
+
+              if(isset($_POST['EditAdmin'])){
+                $editUsername = $_POST['adminEditName'];
+                $editEmail = $_POST['adminEditEmail'];
+                $editPosition =$_POST['adminEditPosition'];
+                $editDate = $_POST['adminEditDate'];
+                $editPassword = $_POST['adminEditPassword'];
+                $edit = $_GET['AdminID'];
+                echo $edit;
+                echo "fuck you";
+
+                //  try{
+                //   $editSQL = "UPDATE Admintbl SET AdminName ='$editUsername', AdminEmail ='$editEmail',AdminPosition='$editPosition',AdminDate='$editDate',AdminPassword ='$editPassword' WHERE AdminID = '$edit'";
+                //   $editquery = mysqli_query($connection,$editSQL);
+                //   echo "fuck u";
+                //  }catch(ex){
+                //   echo ex;
+                //  }
+                
+              }
+
+
+            ?>
+            <form action="adminregister.php" method="POST" class="grid gap-3">
+              <p><?php echo $EditData['AdminID'] ?></p>
+              <input
+                type="text"
+                name="adminEditName"
+                placeholder="Enter your name"
+                class="outline-none border-b-[2px] border-[#6F00FF] p-2"
+                value="<?php echo $EditData['AdminName'] ?>"
+              />
+
+              <?php
+              if ($valcount == 1){
+                echo "<span>Email is already exist<span>";
+              }
+              ?> <br>
+              <input
+                type="email"
+                name="adminEditEmail"
+                placeholder="Enter your email"
+                class="outline-none border-b-[2px] border-[#6F00FF] p-2"
+                value="<?php echo $EditData['AdminEmail'] ?>"
+              />
+
+              <br>
+              <input
+                type="text"
+                name="adminEditPosition"
+                placeholder="Enter your position"
+                class="outline-none border-b-[2px] border-[#6F00FF] p-2"
+                value="<?php echo $EditData['AdminPosition'] ?>"
+              />
+
+              <br>
+              <input
+                type="text"
+                name="adminEditDate"
+                placeholder="Enter your start Date"
+                class="outline-none border-b-[2px] border-[#6F00FF] p-2"
+                value="<?php echo $EditData['AdminDate'] ?>"
+              />
+  
+              <br>
+              <input
+                type="password"
+                name="adminEditPassword"
+                placeholder="Enter your password"
+                class="outline-none border-b-[2px] border-[#6F00FF] p-2"
+                value="<?php echo $EditData['AdminPassword'] ?>"
+              />
+  
+              <input
+                type="submit"
+                name="EditAdmin"
+                class="p-2 text-lg mt-8 text-center w-full font-semibold bg-[#6F00FF] rounded-lg text-white hover:bg-[#6F00FF]/60"
+              />
+            </form>
+          </div>
+          <!-- end edit section  -->
   
         <!-- end create post div  -->
+
+
       </main>
 
       

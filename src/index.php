@@ -1,52 +1,58 @@
 <?php
 
-  $servername = "localhost"; 
-  $username = "root";
-  $password = "";
-  $databasename = "BlogWebsite";
-
-  $connection = new mysqli($servername, $username, $password, $databasename);
-
-  if ($connection->connect_error) {
-    print("fail");
-  } else {
-    print("hello"); 
-  }
+include("connection.php");
 
 
 if(isset($_POST["Signup"])){
   $username = $_POST["Signupname"];
-  $email =$_POST["Signupemail"];
-  $password =$_POST["Signuppassword"];
+  $email = $_POST["Signupemail"];
+  $Signuppassword = $_POST["Signuppassword"];
 
-  $insert = "INSERT INTO Usertbl(UserName,UserEmail,UserPassword) VALUES ('$username','$email','$password')";
+  $encrypted = password_hash($Signuppassword, PASSWORD_DEFAULT);
 
-  $query = mysqli_query($connection,$insert);
+  $valemail = "SELECT UserEmail FROM Usertbl WHERE UserEmail = '$email'";
+  $valquery = mysqli_query($connection,$valemail);
+  $valcount = mysqli_num_rows($valquery);
+
+  if ($valcount == 0) {
+    $insert = "INSERT INTO Usertbl (UserName,UserEmail,UserPassword) VALUES ('$username','$email','$encrypted')";
+    $query = mysqli_query($connection,$insert);
+   }
+
 }
 
-if(isset($_POST["Signin"])){
+  if(isset($_POST["Signin"])){
   $email =$_POST["Signinemail"];
-  $password =$_POST["Signinpassword"];
-
-  $check = "SELECT * FROM Usertbl WHERE UserEmail = '$email' AND UserPassword = '$password'";
-
-  $query = mysqli_query($connection, $check);
-
-  $count = mysqli_num_rows($query);
-
-  if ($count == 1) {
-    print("success"); 
-  } else {
-    print("fail");
+  $password =$_POST["password"];
+  $check = "SELECT UserEmail, UserPassword FROM Usertbl WHERE UserEmail = '$email'";
+  $result = mysqli_query($connection,$check);
+  $count = mysqli_num_rows($result);
+  if($count == 1)
+  {
+    echo "success";
+  }else{
+    echo "fail";
   }
-  
-}
+  $data = mysqli_fetch_assoc($result);
+  $encryptedpassword = $data['UserPassword'];
+  echo $password;
+  echo $encryptedpassword;
+  if(password_verify($password,$encryptedpassword))
+  {
+    echo "correct";
+  }else{
+    echo "incorrect";
+  }
+};
 
+  $postSelect = "SELECT * FROM Posttbl";
+  $postQuery = mysqli_query($connection,$postSelect);
+  $postCount = mysqli_num_rows($postQuery);
+
+  echo $postCount;
 
 
 ?>
-
-
 
 
 <!DOCTYPE html>
@@ -311,14 +317,62 @@ if(isset($_POST["Signin"])){
                   Designers wear many hats,the first one being a moderator.
                 </p>
               </div>
-</div>
+            </div>
 
             <div class="border"></div>
           </div>
           <!-- end first content  -->
 
+          <!--start copy first content  -->
+         <?php 
+         
+         for($i = 0; $i < $postCount; $i++)
+         {
+          $data = mysqli_fetch_assoc($postQuery)
+         
+          ?>
+
+
+          <div class="grid gap-8 ">
+          <a
+            href=""
+            class="flex items-center gap-4 text-[#808080] text-sm md:text-md"
+          >
+            <img
+            src=""
+              class="w-8 h-auto"
+              alt=""
+            />
+            <p></p>
+            <p></p>
+            <p></p>
+          </a>
+          <div class="grid md:flex items-center gap-5">
+            <img
+              src=""
+              alt=""
+              class="w-fit md:w-[20%] h-auto rounded-lg"
+            />
+            <div>
+              <h2 class="font-semibold text-xl">
+              <?php echo $data['PostTitle'] ?>
+              </h2>
+              <p class="text-[#808080] text-lg">
+              <?php echo $data['PostDescription'] ?>
+              </p>
+            </div>
+          </div>
+
+          <div class="border"></div>
+        </div>
+
+         <?php } ?>
+
+ 
+          <!-- end copy first content  -->
+
           <!-- start second content  -->
-          <div class="grid gap-8 mt-6 md:mt-14">
+          <!-- <div class="grid gap-8 mt-6 md:mt-14">
             <a
               href=""
               class="flex items-center gap-4 text-[#808080] text-sm md:text-md"
@@ -350,11 +404,11 @@ if(isset($_POST["Signin"])){
             </div>
 
             <div class="border"></div>
-          </div>
+          </div> -->
           <!-- end second content  -->
 
           <!-- start third content  -->
-          <div class="grid gap-8 mt-14">
+          <!-- <div class="grid gap-8 mt-14">
             <a
               href=""
               class="flex items-center gap-4 text-[#808080] text-sm md:text-md"
@@ -385,12 +439,12 @@ if(isset($_POST["Signin"])){
             </div>
 
             <div class="border"></div>
-          </div>
+          </div> -->
 
           <!-- end third content  -->
 
           <!-- start fourth content  -->
-          <div class="grid gap-8 mt-14">
+          <!-- <div class="grid gap-8 mt-14">
             <a
               href=""
               class="flex items-center gap-4 text-[#808080] text-sm md:text-md"
@@ -421,7 +475,7 @@ if(isset($_POST["Signin"])){
             </div>
 
             <div class="border"></div>
-          </div>
+          </div> -->
 
           <!-- end fourth content  -->
         </section>
@@ -518,6 +572,9 @@ if(isset($_POST["Signin"])){
 
           <form action="index.php" method="POST">
             <div class="grid gap-6">
+
+
+            
               <input
                 type="text"
                 id="name"
@@ -526,6 +583,11 @@ if(isset($_POST["Signin"])){
                 class="outline-none border-b-[2px] border-[#6F00FF] p-2"
               />
 
+              <?php
+              if ($valcount == 1){
+                echo "<span>Email is already exist<span>";
+              }
+              ?>
               <input
                 id="email"
                 name="Signupemail"
@@ -534,6 +596,7 @@ if(isset($_POST["Signin"])){
                 class="outline-none border-b-[2px] border-[#6F00FF] p-2"
               />
 
+              
               <input
                 type="password"
                 id="password"
@@ -577,6 +640,11 @@ if(isset($_POST["Signin"])){
 
           <form action="index.php" method="POST">
             <div class="grid gap-6">
+
+            <?php
+            $result = ($count == 1) ? "<span>Correct Email</span>" : "<span>Incorrect Email</span>";
+            echo $result;
+            ?>
               <input
                 id="email"
                 name="Signinemail"
@@ -585,10 +653,14 @@ if(isset($_POST["Signin"])){
                 class="outline-none border-b-[2px] border-[#6F00FF] p-2"
               />
 
+            <?php
+            $result = ($count == 1) ? "<span>Correct Password</span>" : "<span>Incorrect Password</span>";
+            echo $result;
+            ?>
               <input
                 type="password"
-                id="password"
-                name="Signinpassword"
+                id="signinpassword"
+                name="password"
                 placeholder="Enter your Password"
                 class="outline-none border-b-[2px] border-[#6F00FF] p-2"
               />
@@ -615,7 +687,6 @@ if(isset($_POST["Signin"])){
 
       <!-- end log in  -->
     </main>
-
     <script src="./script.js" type="text/javascript"></script>
   </body>
 </html>
