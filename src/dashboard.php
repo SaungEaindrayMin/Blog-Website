@@ -34,11 +34,31 @@ if(isset($_POST["submit"])){
     <main class=" grid">
       <!-- start top bar section  -->
 
-      <section class="relative bg-[#F7F7F7]/20">
+      <section class="relative bg-[#F7F7F7]">
       <div
-        class="flex fixed z-10 w-full  justify-between items-center p-4 bg-white/20 top-0 shadow-md shadow-[#808080]/20"
+        class="flex fixed z-10 w-full  justify-between items-center p-4 bg-white top-0 shadow-md shadow-[#808080]/20"
       >
+
+      <button class="p-3 bg-[#F5F5F5] lg:hidden block rounded-lg" id="navIcon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.75 9h16.5m-16.5 6.75h16.5"
+              />
+            </svg>
+          </button>
+
         <h1 class="text-2xl font-semibold text-[#6F00FF]">Blog Website</h1>
+
+        
 
         <div class="flex items-center gap-3">
           <button class="bg-[#808080]/10 rounded-full p-2">
@@ -71,9 +91,9 @@ if(isset($_POST["submit"])){
       <!-- end top bar section  -->
 
       <!-- start side bar section  -->
-       <div class="flex  relative  bg-[#F7F7F7]/20">
+       <div class="flex   relative  bg-[#F7F7F7]/20">
       <section
-        class="bg-[#F7F7F7]/20 mt-[6.4%] fixed  justify-between items-center  "
+        class="bg-[#F7F7F7]/20 mt-[6.4%] fixed hidden lg:block  justify-between items-center  "
       >
         <div
           class="shadow-md text-black  p-4  h-screen rounded-r-lg"

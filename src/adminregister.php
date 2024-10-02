@@ -43,6 +43,22 @@ $adminCount=mysqli_num_rows($adminQuery);
         <div
           class="flex fixed z-10 w-full justify-between items-center p-4 bg-white top-0 shadow-md shadow-[#808080]/20"
         >
+        <button class="p-3 bg-[#F5F5F5] lg:hidden block rounded-lg" id="navIcon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.75 9h16.5m-16.5 6.75h16.5"
+              />
+            </svg>
+          </button>
           <h1 class="text-2xl font-semibold text-[#6F00FF]">Blog Website</h1>
   
           <div class="flex items-center gap-3">
@@ -146,7 +162,7 @@ $adminCount=mysqli_num_rows($adminQuery);
   
         <!-- start create post div  -->
   
-        <section class=" grid lg:flex gap-8   justify-center  mt-20 w-[90%] md:w-full  mx-auto ">
+        <section class=" grid lg:flex gap-8   justify-center  mt-20 w-full mx-auto   ">
           <div
             class="grid  gap-5 mt-3 lg:mt-8 bg-white   rounded-lg "
           >
@@ -209,7 +225,7 @@ $adminCount=mysqli_num_rows($adminQuery);
           <!-- start admin table  -->
           
            
-          <section class="mt-3 lg:mt-8 bg-white  rounded-lg">
+          <section class="mt-3 lg:mt-8 bg-white overflow-x-auto  rounded-lg">
 
 
           <table class="">
@@ -236,7 +252,7 @@ for ($i = 0; $i < $adminCount; $i++)
       <td class="px-4 py-2 border "><?php echo $data['AdminEmail'] ?></td>
       <td class="px-4 py-2 border "><?php echo $data['AdminPosition'] ?></td>
       <td class="px-4 py-2 border "><?php echo $data['AdminDate'] ?></td>
-      <td class="px-4 py-2 border ">
+      <td class="px-4 py-2 border grid lg:flex gap-3 lg:gap-4 ">
         <a href="adminregister.php?AdminID=<?php echo $data['AdminID'] ?>" class="p-2 bg-[#00FF00]  rounded-lg ">Edit</a>
         <a class="p-2 bg-[#ED1B24] text-white rounded-lg ">Delete</a>
       </td>
@@ -257,41 +273,45 @@ for ($i = 0; $i < $adminCount; $i++)
 
         </section>
   
-      </div>
+      </div >
 
       <!-- start edit section  -->
 
-      <div class="grid justify-between items-center w-[70%] gap-4 mt-14  mx-auto">
+      <div class="grid justify-between items-center  gap-4 mt-14  mx-auto   ">
             <h1 class="text-2xl  md:text-5xl text-[#6F00FF] font-semibold text-center">Edit Admin Register</h1>
   
             <?php 
-              if (isset($_GET['AdminID'])){
-                $edit = $_GET['AdminID'];
+    if (isset($_GET['AdminID'])) {
+      $edit = $_GET['AdminID'];
+  
+      $editData = "SELECT * FROM Admintbl WHERE AdminID = '$edit'";
+      $editDataQuery = mysqli_query($connection, $editData);
+      $EditData = mysqli_fetch_assoc($editDataQuery);
 
-              $editData = "SELECT * FROM Admintbl WHERE AdminID = '$edit'";
-              $editDataQuery = mysqli_query($connection,$editData);
-              $EditData = mysqli_fetch_assoc($editDataQuery);
-              }
+      if (isset($_POST['EditAdmin'])) {
+        $editUsername = $_POST['adminEditName'];
+        $editEmail = $_POST['adminEditEmail'];
+        $editPosition = $_POST['adminEditPosition'];
+        $editDate = $_POST['adminEditDate'];
+        $edit = $_GET['AdminID'];
+    
+        // SQL statement to update the data
+        $editSQL = "UPDATE Admintbl SET AdminName = '$editUsername', AdminEmail = '$editEmail', AdminPosition = '$editPosition', AdminDate = '$editDate' WHERE AdminID = '$edit'";
+    
+        // Execute the query and handle errors
+        if (mysqli_query($connection, $editSQL)) {
+            echo "Admin details updated successfully!";
+        } else {
+            // Output the SQL error for debugging
+            echo "Error updating record: " . mysqli_error($connection);
+        }
+  
+        echo $edit;
+  
+    }
+  }
+  
 
-              if(isset($_POST['EditAdmin'])){
-                $editUsername = $_POST['adminEditName'];
-                $editEmail = $_POST['adminEditEmail'];
-                $editPosition =$_POST['adminEditPosition'];
-                $editDate = $_POST['adminEditDate'];
-                $editPassword = $_POST['adminEditPassword'];
-                $edit = $_GET['AdminID'];
-                echo $edit;
-                echo "fuck you";
-
-                //  try{
-                //   $editSQL = "UPDATE Admintbl SET AdminName ='$editUsername', AdminEmail ='$editEmail',AdminPosition='$editPosition',AdminDate='$editDate',AdminPassword ='$editPassword' WHERE AdminID = '$edit'";
-                //   $editquery = mysqli_query($connection,$editSQL);
-                //   echo "fuck u";
-                //  }catch(ex){
-                //   echo ex;
-                //  }
-                
-              }
 
 
             ?>
@@ -337,13 +357,6 @@ for ($i = 0; $i < $adminCount; $i++)
               />
   
               <br>
-              <input
-                type="password"
-                name="adminEditPassword"
-                placeholder="Enter your password"
-                class="outline-none border-b-[2px] border-[#6F00FF] p-2"
-                value="<?php echo $EditData['AdminPassword'] ?>"
-              />
   
               <input
                 type="submit"

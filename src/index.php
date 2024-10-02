@@ -164,7 +164,7 @@ if(isset($_POST["Signup"])){
 
       <nav class="block lg:hidden relative w-full">
         <div
-          class="flex px-[9%] justify-between items-center fixed bg-white w-full top-0 p-2"
+          class="flex  px-[9%] py-[5%] justify-between items-center fixed bg-white w-full top-0 p-2"
         >
           <a href="">
             <svg
@@ -208,7 +208,7 @@ if(isset($_POST["Signup"])){
 
         <div class="block lg:hidden">
           <ul
-            class="flex justify-center  items-center  w-full py-4 fixed bg-white navClose"
+            class="flex justify-center  items-center gap-3  w-full  fixed bg-white navClose"
             id="navBar"
           >
             <li>
@@ -266,6 +266,24 @@ if(isset($_POST["Signup"])){
                   />
                 </svg>
               </a>
+            </li>
+
+            <li>
+            <button
+            class="p-2 bg-[#6F00FF] rounded-lg text-center text-white"
+            id="openModal"
+          >
+            Sign Up
+          </button>
+            </li>
+
+            <li>
+            <button
+            id="loginOpenModal"
+            class="p-2 bg-[#DBD7D2] rounded-lg text-center text-[#6F00FF]"
+          >
+            Log In
+          </button>
             </li>
           </ul>
         </div>
@@ -561,7 +579,7 @@ if(isset($_POST["Signup"])){
       <!-- start Sign up  -->
       <section
         id="modal"
-        class="grid items-center fixed inset-0 hidden w-[30%] h-[70%] bg-white mx-3 bg-white lg:mx-auto mt-14 shadow-lg shadow-[#DBD7D2]/80 rounded-lg"
+        class="grid items-center justify-center fixed inset-0 hidden w-full h-[50%] lg:w-[30%] lg:h-[70%] bg-white  bg-white mx-auto mt-14 shadow-lg shadow-[#DBD7D2]/80 rounded-lg"
       >
         <div class="grid gap-6 p-6">
          
@@ -631,7 +649,7 @@ if(isset($_POST["Signup"])){
       <!-- start sign in  -->
       <section
         id="loginModal"
-        class="grid items-center fixed inset-0 hidden w-[30%] h-[70%] bg-white mx-3 bg-white lg:mx-auto mt-14 shadow-lg shadow-[#DBD7D2]/80 rounded-lg"
+        class="grid items-center justify-center fixed inset-0 hidden w-full h-[50%] lg:w-[30%] lg:h-[70%] bg-white  bg-white mx-auto mt-14 shadow-lg shadow-[#DBD7D2]/80 rounded-lg"
       >
         <div class="grid gap-6 p-6">
           <h1 class="text-center font-semibold text-3xl text-[#6F00FF]">
