@@ -288,26 +288,31 @@ for ($i = 0; $i < $adminCount; $i++)
       $editDataQuery = mysqli_query($connection, $editData);
       $EditData = mysqli_fetch_assoc($editDataQuery);
 
-      if (isset($_POST['EditAdmin'])) {
-        $editUsername = $_POST['adminEditName'];
-        $editEmail = $_POST['adminEditEmail'];
-        $editPosition = $_POST['adminEditPosition'];
-        $editDate = $_POST['adminEditDate'];
-        $edit = $_GET['AdminID'];
-    
-        // SQL statement to update the data
-        $editSQL = "UPDATE Admintbl SET AdminName = '$editUsername', AdminEmail = '$editEmail', AdminPosition = '$editPosition', AdminDate = '$editDate' WHERE AdminID = '$edit'";
-    
-        // Execute the query and handle errors
-        if (mysqli_query($connection, $editSQL)) {
-            echo "Admin details updated successfully!";
-        } else {
-            // Output the SQL error for debugging
-            echo "Error updating record: " . mysqli_error($connection);
-        }
+    //   if (isset($_POST['EditAdmin'])) {
+    //     $editUsername = $_POST['adminEditName'];
+    //     $editEmail = $_POST['adminEditEmail'];
+    //     $editPosition = $_POST['adminEditPosition'];
+    //     $editDate = $_POST['adminEditDate'];
+    //     $edit = $_GET['AdminID'];
+    //     $editSQL = "UPDATE Admintbl SET AdminName = '$editUsername', AdminEmail = '$editEmail', AdminPosition = '$editPosition', AdminDate = '$editDate' WHERE AdminID = $edit";
+    //     if (mysqli_query($connection, $editSQL)) {
+    //         echo "Admin details updated successfully!";
+    //     } else {
+    //         echo "Error updating record: " . mysqli_error($connection);
+    //     }
   
-        echo $edit;
+    //     echo $edit;
   
+    // }
+
+    // edit admin 
+    if(isset($_POST['EditAdmin'])){
+      $editUsername = $_POST['adminEditName'];
+      $editEmail = $_POST['adminEditEmail'];
+      $editPosition = $_POST['adminEditPosition'];
+      $editDate = $_POST['adminEditDate'];
+
+      $editSQL = "UPDATE Admintbl SET AdminName = '$editUsername', AdminEmail = '$editEmail', AdminPosition = '$editPosition', AdminDate = '$editDate' WHERE AdminID = $edit";
     }
   }
   
