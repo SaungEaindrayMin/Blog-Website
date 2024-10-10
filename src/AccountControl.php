@@ -1,36 +1,39 @@
 <?php
+
 include("connection.php");
 
-if(isset($_POST["Login"])){
-  $name = $_POST["Name"];
-  $email = $_POST["Email"];
-  $password = $_POST["Password"];
+$AccountSelect = "SELECT * FROM Accounttbl";
+$AccountQuery = mysqli_query($connection,$AccountSelect);
+$AccountCount = mysqli_num_rows($AccountQuery);
 
-  $loginCheck = "SELECT AccountEmail,AccountRole,AccountPassword FROM Accounttbl WHERE AccountEmail = '$email'";
-  $LoginQuery = mysqli_query($connection, $loginCheck);
+if(isset($_GET['AccountID'])){
+  $editID = $_GET['AccountID'];
+
   
-  $LoginCount = mysqli_num_rows($LoginQuery);
-  echo $LoginCount;
-  if ($LoginCount == 1){
-    $data = mysqli_fetch_assoc($LoginQuery);
-    $encrypted = $data['AccountPassword'];
-    if(password_verify($password,$encrypted)) 
-    {
-       $Role = $data['AccountRole'];
-      
-        if ($Role == 'user'){
-       header('location:index.php');
-  }else{
-     header('location:dashboard.php');
-  }
-
-    }else{
-      echo "Password incorrect";
+  $editData = "SELECT * FROM Accounttbl WHERE AccountID = $editID";
+  $editDataQuery = mysqli_query($connection, $editData);
+  if (mysqli_num_rows ($editDataQuery) == 1){
+    foreach ($editDataQuery as $row){
+      $editUsername = $row['AccountName'];
+      $editEmail = $row['AccountEmail'];
     }
-  }else{
-    echo "Email doesn't exit";
-  }
+  } 
+
 }
+
+if(isset($_POST['EditSubmit'])){
+  $editUsername = $_POST['Name'];
+  $editEmail = $_POST['Email'];
+  $editID = $_POST['ID'];
+
+  $update = "UPDATE Accounttbl SET AccountName = '$editUsername', AccountEmail='$editEmail' WHERE AccountID =$editID";
+  $updateQuery = mysqli_query($connection,$update);
+
+    header('location: dashboard.php');
+
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -38,10 +41,9 @@ if(isset($_POST["Login"])){
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Login</title>
+    <title>Document</title>
     <link rel="stylesheet" href="./output.css" />
   </head>
-
   <body class="relative bg-[#021124]/80 text-white">
     <main>
       <!-- Start Background  -->
@@ -170,7 +172,7 @@ if(isset($_POST["Login"])){
 
       <!-- ! Start Main Content  -->
       <div
-        class="relative md:ms-[125px] rounded-tl-2xl bg-[#020b1a]/90 backdrop-blur-3xl supports-backdrop-blur:bg-[#021124]/95 min-h-screen "
+        class="relative md:ms-[125px] rounded-tl-2xl bg-[#020b1a]/90 backdrop-blur-3xl supports-backdrop-blur:bg-[#021124]/95 min-h-screen rounded-xl py-8"
       >
         <!-- Start Navbar  -->
         <nav
@@ -212,27 +214,92 @@ if(isset($_POST["Login"])){
         </nav>
         <!-- End Navbar  -->
 
-        <!-- start Admin Login section  -->
+        <div class="grid gap-y-6 p-6">
+          <div class="w-full mb-6">
+            <span class="text-lg font-semibold text-slate-300"
+              >Good Morning,</span
+            >
+            <h1 class="text-4xl font-bold font-serif mt-2">
+              Saung Eaindray Min
+            </h1>
+          </div>
 
-        <div class="p-8"  >
+          
+
+          <!-- start edit section -->
+
+
+
+            <div
+                class="overflow-x-auto w-full mt-2 border border-slate-800 rounded-lg"
+              >
+                <table class="min-w-full bg-[#021124] table-auto">
+                  <thead class="bg-[#020c17]">
+                    <tr>
+                      <th class="py-2 px-4 text-left font-medium">id</th>
+                      <th class="py-2 px-4 text-left font-medium">Name</th>
+                      <th class="py-2 px-4 text-left font-medium">Email</th>
+                      <th class="py-2 px-4 text-left font-medium">Role</th>
+                    </tr>
+                  </thead>
+
+   
+
+                  <tbody>
+                  <?php
+
+                    for ($i = 0; $i < $AccountCount; $i++)
+                    {
+                    $Accountdata = mysqli_fetch_assoc($AccountQuery);
+
+                  ?>
+                  
+                    <tr class="border-t border-slate-800">
+                      <td class="py-2 px-4"><?php echo $Accountdata['AccountID'];?></td>
+                      <td class="py-2 px-4"><?php echo $Accountdata['AccountName'];?></td>
+                      <td class="py-2 px-4"><?php echo $Accountdata['AccountEmail'];?></td>
+                      <td class="py-2 px-4"><?php echo $Accountdata['AccountRole'];?></td>
+                    </tr>
+                    <?php } ?>
+                   
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+
+            <div>
               <span
-                class="flex items-center  p-8 text-2xl font-semibold text-slate-300"
+                class="flex items-center text-2xl font-semibold text-slate-300"
                 ><div class="h-px w-3 me-1 bg-slate-300"></div>
-                ADMIN LOGIN</span
+                Edit Account Info</span
               >
-
-
               <form
-                action="adminLogin.php"
+                action="AccountControl.php"
                 method="POST"
-                class="grid gap-y-2 mt-2 bg-[#021124] p-8 rounded-lg border border-slate-800"
+                class="grid gap-y-2 mt-2 bg-[#021124] p-4 rounded-lg border border-slate-800"
               >
+                <label
+                  class="cursor-pointer bg-[#0e1c2e] text-xl text-center font-semibold border-dotted border-2 border-slate-600 p-12 rounded-md mb-1"
+                >
+                  Upload Image
+                  <input type="file" class="hidden" name="UserImage" />
+                </label>
+
                 
+                <input 
+                type="hidden"
+                 name="ID"
+                 value="<?php echo $editID?>"
+                 class="py-1 focus:outline-none bg-transparent border-b mb-1 border-slate-300"
+                 
+                  />
 
                 <label for="">Name</label>
                 <input
                   type="text"
                   name="Name"
+                  value="<?php echo $editUsername ?>"
                   class="py-1 focus:outline-none bg-transparent border-b mb-1 border-slate-300"
                 />
 
@@ -240,33 +307,29 @@ if(isset($_POST["Login"])){
                 <input
                   type="email"
                   name="Email"
+                  value="<?php echo $editEmail ?>"
                   class="py-1 focus:outline-none bg-transparent border-b mb-1 border-slate-300"
                 />
 
-                
-
-                <label for="">Password</label>
-                <input
-                  type="password"
-                  name="Password"
-                  class="py-1 focus:outline-none bg-transparent border-b mb-1 border-slate-300"
-                />
+              
 
                 <input
                   type="submit"
-                  name="Login"
+                  name="EditSubmit"
                   class="btn btn-sm w-fit ms-auto block mt-2 focus:outline-none"
                 />
               </form>
             </div>
 
-            <!-- end admin Login section  -->
 
-        <div class="grid gap-y-6 p-6">
+          <!-- end edit section  -->
+          
+         
 
           <footer class="mt-12">
             <div class="flex items-center justify-between">
               <p>© 2024 Saung Eaindray Min</p>
+
               <div class="flex items-center gap-x-6">
                 <a href="/">Home</a>
                 <a href="/">Contact</a>
@@ -278,5 +341,4 @@ if(isset($_POST["Login"])){
       <!-- ! End Main Content  -->
     </main>
   </body>
-  
 </html>

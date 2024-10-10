@@ -579,7 +579,7 @@ if(isset($_POST["Signup"])){
       <!-- start Sign up  -->
       <section
         id="modal"
-        class="grid items-center justify-center fixed inset-0 hidden w-full h-[50%] lg:w-[30%] lg:h-[70%] bg-white  bg-white mx-auto mt-14 shadow-lg shadow-[#DBD7D2]/80 rounded-lg"
+        class="grid items-center justify-center fixed inset-0 hidden  w-full h-auto lg:w-[30%] lg:h-[70%] bg-white  bg-white mx-auto mt-14 shadow-lg shadow-[#DBD7D2]/80 rounded-lg"
       >
         <div class="grid gap-6 p-6">
          
@@ -649,7 +649,7 @@ if(isset($_POST["Signup"])){
       <!-- start sign in  -->
       <section
         id="loginModal"
-        class="grid items-center justify-center fixed inset-0 hidden w-full h-[50%] lg:w-[30%] lg:h-[70%] bg-white  bg-white mx-auto mt-14 shadow-lg shadow-[#DBD7D2]/80 rounded-lg"
+        class="grid items-center justify-center fixed inset-0 hidden  w-full h-auto lg:w-[30%] lg:h-[70%] bg-white  bg-white mx-auto mt-14 shadow-lg shadow-[#DBD7D2]/80 rounded-lg"
       >
         <div class="grid gap-6 p-6">
           <h1 class="text-center font-semibold text-3xl text-[#6F00FF]">
@@ -705,6 +705,8 @@ if(isset($_POST["Signup"])){
 
       <!-- end log in  -->
     </main>
+
+    
     <script src="./script.js" type="text/javascript"></script>
   </body>
 </html>
