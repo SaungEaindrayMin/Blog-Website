@@ -1,59 +1,57 @@
 <?php
-
 include("connection.php");
 
+if (isset($_POST["UserSubmit"])){
+  $username = $_POST["UserName"];
+  $useremail = $_POST["UserEmail"];
+  $userpassword = $_POST["UserPassword"];
 
-if(isset($_POST["Signup"])){
-  $username = $_POST["Signupname"];
-  $email = $_POST["Signupemail"];
-  $Signuppassword = $_POST["Signuppassword"];
+  $encryptedPassword = password_hash($userpassword,PASSWORD_DEFAULT);
 
-  $encrypted = password_hash($Signuppassword, PASSWORD_DEFAULT);
+  $userSQL = "SELECT AccountEmail FROM Accounttbl WHERE AccountEmail = '$useremail'";
+  $userQuery = mysqli_query($connection, $userSQL);
+  $userCount = mysqli_num_rows($userQuery);
 
-  $valemail = "SELECT UserEmail FROM Usertbl WHERE UserEmail = '$email'";
-  $valquery = mysqli_query($connection,$valemail);
-  $valcount = mysqli_num_rows($valquery);
-
-  if ($valcount == 0) {
-    $insert = "INSERT INTO Usertbl (UserName,UserEmail,UserPassword) VALUES ('$username','$email','$encrypted')";
-    $query = mysqli_query($connection,$insert);
-   }
-
+  if($userCount == 0){
+    $userInsert = "INSERT INTO Accounttbl (AccountName,AccountEmail,AccountRole,AccountPassword) VALUES ('$username','$useremail','user','$encryptedPassword')";
+    $Query = mysqli_query($connection,$userInsert);
+  }
 }
 
-  if(isset($_POST["Signin"])){
-  $email =$_POST["Signinemail"];
-  $password =$_POST["password"];
-  $check = "SELECT UserEmail, UserPassword FROM Usertbl WHERE UserEmail = '$email'";
-  $result = mysqli_query($connection,$check);
-  $count = mysqli_num_rows($result);
-  if($count == 1)
-  {
-    echo "success";
+if(isset($_POST["Submit"])){
+  $name = $_POST["Name"];
+  $email = $_POST["Email"];
+  $password = $_POST["Password"];
+
+  $loginCheck = "SELECT AccountEmail,AccountRole,AccountPassword FROM Accounttbl WHERE AccountEmail = '$email'";
+  $LoginQuery = mysqli_query($connection, $loginCheck);
+  
+  $LoginCount = mysqli_num_rows($LoginQuery);
+  if ($LoginCount == 1){
+    $data = mysqli_fetch_assoc($LoginQuery);
+    $encrypted = $data['AccountPassword'];
+    if(password_verify($password,$encrypted)) 
+    {
+       $Role = $data['AccountRole'];
+      
+        if ($Role == 'user'){
+       header('location:index.php');
   }else{
-    echo "fail";
+     header('location:dashboard.php');
   }
-  $data = mysqli_fetch_assoc($result);
-  $encryptedpassword = $data['UserPassword'];
-  echo $password;
-  echo $encryptedpassword;
-  if(password_verify($password,$encryptedpassword))
-  {
-    echo "correct";
+
+    }else{
+      echo "Password incorrect";
+    }
   }else{
-    echo "incorrect";
+    echo "Email doesn't exit";
   }
-};
+}
 
-  $postSelect = "SELECT * FROM Posttbl";
-  $postQuery = mysqli_query($connection,$postSelect);
-  $postCount = mysqli_num_rows($postQuery);
-
-  echo $postCount;
-
-
+$postSQL = "SELECT * FROM Posttbl";
+$postQuery = mysqli_query($connection,$postSQL);
+$postCount = mysqli_num_rows($postQuery);
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
@@ -64,649 +62,291 @@ if(isset($_POST["Signup"])){
     <link rel="stylesheet" href="./output.css" />
   </head>
   <body>
-    <main  class="lg:flex transition-opacity duration-300">
-      <!-- start left side bar  -->
-      <nav  class="mt-14 relative w-[10%] px-[3%] hidden lg:block">
-        <div class="grid justify-between h-screen gap-[20%] fixed">
-          <a href=""
-            ><svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-9"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-              />
-            </svg>
-          </a>
+    
 
-          <div class="grid gap-6">
-            <a href="">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="size-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-                />
-              </svg>
-            </a>
+    <main class="grid grid-cols-1 md:grid-cols-6">
+        <!-- Start Mobile Navbar  -->
 
-            <a href="">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="size-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
-                />
-              </svg>
-            </a>
+        <nav class="md:hidden flex justify-between items-center px-3 py-2 border-b">
+            <h1>Logo</h1>
 
-            <a href="">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="size-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
-                />
-              </svg>
-            </a>
-          </div>
-
-          <a href="">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-              />
-            </svg>
-          </a>
-        </div>
-      </nav>
-
-      <nav class="block lg:hidden relative w-full">
-        <div
-          class="flex  px-[9%] py-[5%] justify-between items-center fixed bg-white w-full top-0 p-2"
-        >
-          <a href="">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-9"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-              />
-            </svg>
-          </a>
-
-          <button class="p-3 bg-[#F5F5F5] rounded-lg" id="navIcon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M3.75 9h16.5m-16.5 6.75h16.5"
-              />
-            </svg>
-          </button>
-        </div>
-
-        <div class="block lg:hidden">
-          <ul
-            class="flex justify-center  items-center gap-3  w-full  fixed bg-white navClose"
-            id="navBar"
-          >
-            <li>
-              <a href="">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="size-6"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-                  />
+            <button type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                 </svg>
-              </a>
-            </li>
+            </button>
+        </nav>
 
-            <li>
-              <a href="">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="size-6"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
-                  />
-                </svg>
-              </a>
-            </li>
+        <!-- Start Mobile Aside  -->
 
-            <li>
-              <a href="">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="size-6"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
-                  />
-                </svg>
-              </a>
-            </li>
+        <!-- <aside  class="md:hidden fixed top-0 left-0 w-full h-screen bg-gray-100/70">
+            <ul class="flex flex-col items-center gap-y-12 w-1/2 h-screen bg-gray-200 pt-12">
+                <li><a href="#" class="w-full px-6 py-3e text-xl font-bold">Logo</a></li>
+                <li><a href="#" class="w-full px-6 py-3  capitalize">home</a></li>
+                <li><a href="#" class="w-full px-6 py-3  capitalize">about</a></li>
+                <li><a href="#" class="w-full px-6 py-3  capitalize">blog</a></li>
+                <li><a href="#" class="w-full px-6 py-3  capitalize">contact</a></li>
+            </ul>
 
-            <li>
-            <button
-            class="p-2 bg-[#6F00FF] rounded-lg text-center text-white"
-            id="openModal"
-          >
-            Sign Up
-          </button>
-            </li>
+        </aside> -->
 
-            <li>
-            <button
-            id="loginOpenModal"
-            class="p-2 bg-[#DBD7D2] rounded-lg text-center text-[#6F00FF]"
-          >
-            Log In
-          </button>
-            </li>
-          </ul>
-        </div>
-      </nav>
+        <!-- End Mobile Aside  -->
 
-      <!-- end left side bar  -->
 
-      <section
-        class="grid gap-8 mt-14  lg:mt-0 md:border-r md:border-l w-fit lg:w-[60%]"
+      <!-- Start Left Sidebar  -->
+      <aside
+        class="hidden md:block col-span-1 sticky top-0 h-screen border-r p-8"
       >
-        <!-- start first div  -->
-        <div class="grid gap-3 px-[10%]  mt-6 mb-6 md:mt-14 md:mb-14">
-          <h2 class="font-semibold text-xl">Explore, be curious.</h2>
-          <p class="text-[#808080]">
-            Discover stories, thinking, and expertise from writers on any topic.
-          </p>
+        <div class="flex flex-col justify-between h-full absolute right-20">
+          <h1>Logo</h1>
+
+          <ul class="grid gap-y-4">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Mail</a></li>
+          </ul>
+
+          <div>hello</div>
         </div>
-        <div class="border-b"></div>
+      </aside>
+      <!-- End Left Sidebar  -->
 
-        <!-- end first div  -->
-
-        <section class="mt-6 md:mt-14  mx-auto px-[10%]">
-          <!--start first content  -->
-          <div class="grid gap-8 ">
-            <a
-              href=""
-              class="flex items-center gap-4 text-[#808080] text-sm md:text-md"
+      <!-- Start Main Content  -->
+      <section class="w-full col-span-3">
+        <!-- Start Navbar  -->
+        <nav
+          class="py-20 px-3 md:p-20 bg-cover bg-center bg-no-repeat border-b"
+          style="background-image: url('./BlogWebsite/bgPattern.png')"
+        >
+          <div class="w-full md:w-3/4 mx-auto">
+            <p class="font-bold">Explore, be curious.</p>
+            <span>
+              Discover stories, thinking, and expertise from writers on any
+              topic.</span
             >
-              <img
-                src="./BlogWebsite/cute-girl-avatar-icn-cartoon-little-woman-profile-mascot-illustration-girl-head-face-business-user-logo-free-vector.jpeg"
-                class="w-8 h-auto"
-                alt=""
-              />
-              <p>Anne Lee .</p>
-              <p>in Fintech .</p>
-              <p>Nov 1,2022</p>
-            </a>
-            <div class="grid md:flex items-center gap-5">
-              <img
-                src="./BlogWebsite/UX.jpeg"
-                alt=""
-                class="w-fit md:w-[20%] h-auto rounded-lg"
-              />
-              <div>
-                <h2 class="font-semibold text-xl">
-                  How designers estimate the impact of UX?
-                </h2>
-                <p class="text-[#808080] text-lg">
-                  Designers wear many hats,the first one being a moderator.
-                </p>
-              </div>
-            </div>
-
-            <div class="border"></div>
           </div>
-          <!-- end first content  -->
+        </nav>
+        <!-- End Navbar  -->
 
-          <!--start copy first content  -->
-         <?php 
+        <!-- Start Content  -->
+        <div class="px-3 lg:px-20 py-6">
+          <div class="w-full md:w-3/4 mx-auto">
+
+          <?php 
          
          for($i = 0; $i < $postCount; $i++)
          {
-          $data = mysqli_fetch_assoc($postQuery)
+          $data = mysqli_fetch_assoc($postQuery);
          
           ?>
+            <div class="py-12 border-b">
+              <div class="flex gap-x-4 items-center">
+                <img
+                  src="https://images.unsplash.com/photo-1721332154373-17e78d19b4a4?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  alt="avatar"
+                  class="w-6 h-6 rounded-full object-cover"
+                />
+                <p>Name</p>
+                <p>in Fintech</p>
+                <p>Nov 1, 2022</p>
+              </div>
 
+              <div class="grid grid-cols-2 items-center gap-x-4 mt-4">
+                <img
+                  src="https://images.unsplash.com/photo-1727098043574-b0c96c53e4ab?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  class="w-40 h-32 object-cover rounded-lg"
+                  alt=""
+                />
 
-          <div class="grid gap-8 ">
-          <a
-            href=""
-            class="flex items-center gap-4 text-[#808080] text-sm md:text-md"
-          >
-            <img
-            src=""
-              class="w-8 h-auto"
-              alt=""
-            />
-            <p></p>
-            <p></p>
-            <p></p>
-          </a>
-          <div class="grid md:flex items-center gap-5">
-            <img
-              src=""
-              alt=""
-              class="w-fit md:w-[20%] h-auto rounded-lg"
-            />
-            <div>
-              <h2 class="font-semibold text-xl">
-              <?php echo $data['PostTitle'] ?>
-              </h2>
-              <p class="text-[#808080] text-lg">
-              <?php echo $data['PostDescription'] ?>
-              </p>
-            </div>
-          </div>
-
-          <div class="border"></div>
-        </div>
-
-         <?php } ?>
-
- 
-          <!-- end copy first content  -->
-
-          <!-- start second content  -->
-          <!-- <div class="grid gap-8 mt-6 md:mt-14">
-            <a
-              href=""
-              class="flex items-center gap-4 text-[#808080] text-sm md:text-md"
-            >
-              <img
-                src="./BlogWebsite/pf-2.jpeg"
-                class="w-8 h-auto rounded-full"
-                alt=""
-              />
-              <p>John Cashman .</p>
-              <p>in Hardware .</p>
-              <p>Nov 1,2022</p>
-            </a>
-            <div class="grid md:flex items-center gap-5">
-              <img
-                src="./BlogWebsite/Unknown.jpeg"
-                alt=""
-                class="w-fit md:w-[20%] h-auto rounded-lg"
-              />
-              <div>
-                <h2 class="font-semibold text-xl">
-                Growing a Distributed Product Design Team
-                </h2>
-                <p class="text-[#808080] text-lg">
-                  
-                  The pandemic presented us with a whole new challenge in growing this team.
-                </p>
+                <div >
+                  <h1 class="text-lg font-bold">
+                    <?php echo $data['PostTitle']; ?>
+                  </h1>
+                  <p>
+                    <?php echo $data['PostDescription'];  ?>
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div class="border"></div>
-          </div> -->
-          <!-- end second content  -->
 
-          <!-- start third content  -->
-          <!-- <div class="grid gap-8 mt-14">
-            <a
-              href=""
-              class="flex items-center gap-4 text-[#808080] text-sm md:text-md"
-            >
-              <img
-                src="./BlogWebsite/pf-3.jpeg"
-                class="w-8 h-auto rounded-full"
-                alt=""
-              />
-              <p>Benjamin den Bore .</p>
-              <p>in Media .</p>
-              <p>Nov 1,2022</p>
-            </a>
-            <div class="grid md:flex items-center gap-5">
-              <img
-                src="./BlogWebsite/UI.jpeg"
-                alt=""
-                class="w-fit md:w-[20%] h-auto rounded-lg"
-              />
-              <div>
-                <h2 class="font-semibold text-xl">
-                The Art of User Interface Drop Shadows
-                </h2>
-                <p class="text-[#808080] text-lg">
-                 Make your UI look professional.
-                </p>
-              </div>
-            </div>
 
-            <div class="border"></div>
-          </div> -->
-
-          <!-- end third content  -->
-
-          <!-- start fourth content  -->
-          <!-- <div class="grid gap-8 mt-14">
-            <a
-              href=""
-              class="flex items-center gap-4 text-[#808080] text-sm md:text-md"
-            >
-              <img
-                src="./BlogWebsite/pf-4.png"
-                class="w-8 h-auto rounded-full"
-                alt=""
-              />
-              <p>Jorn van Dijk .</p>
-              <p>in Pdacast .</p>
-              <p>Jul 1, 2022</p>
-            </a>
-            <div class="grid md:flex items-center gap-5">
-              <img
-                src="./BlogWebsite/Figma.webp"
-                alt=""
-                class="w-fit md:w-[20%] h-auto rounded-lg"
-              />
-              <div>
-                <h2 class="font-semibold text-xl">
-                Why I move on from Figma?
-                </h2>
-                <p class="text-[#808080] text-lg">
-                 Fed up with front-loading design? This is what I do instead?
-                </p>
-              </div>
-            </div>
-
-            <div class="border"></div>
-          </div> -->
-
-          <!-- end fourth content  -->
-        </section>
-      </section>
-
-      <!-- start right side bar  -->
-      <section class="mt-14  relative hidden lg:block">
-        <div class="grid gap-4 fixed px-[3%]">
-          <h1 class="font-semibold text-3xl">Subscribe</h1>
-          <p class="text-[#808080]">
-            Sign up now to get access to the library of member-only issues.
-          </p>
-          <button
-            class="p-2 bg-[#6F00FF] rounded-lg text-center text-white"
-            id="openModal"
-          >
-            Sign Up
-          </button>
-          <button
-            id="loginOpenModal"
-            class="p-2 bg-[#DBD7D2] rounded-lg text-center text-[#6F00FF]"
-          >
-            Log In
-          </button>
-
-          <div class="flex justify-between gap-2 mt-6">
-            <a href="">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 496 512"
-                class="w-6 h-6"
-                fill="#808080"
-              >
-                <path
-                  d="M248 8C111 8 0 119 0 256S111 504 248 504 496 393 496 256 385 8 248 8zM363 176.7c-3.7 39.2-19.9 134.4-28.1 178.3-3.5 18.6-10.3 24.8-16.9 25.4-14.4 1.3-25.3-9.5-39.3-18.7-21.8-14.3-34.2-23.2-55.3-37.2-24.5-16.1-8.6-25 5.3-39.5 3.7-3.8 67.1-61.5 68.3-66.7 .2-.7 .3-3.1-1.2-4.4s-3.6-.8-5.1-.5q-3.3 .7-104.6 69.1-14.8 10.2-26.9 9.9c-8.9-.2-25.9-5-38.6-9.1-15.5-5-27.9-7.7-26.8-16.3q.8-6.7 18.5-13.7 108.4-47.2 144.6-62.3c68.9-28.6 83.2-33.6 92.5-33.8 2.1 0 6.6 .5 9.6 2.9a10.5 10.5 0 0 1 3.5 6.7A43.8 43.8 0 0 1 363 176.7z"
-                />
-              </svg>
-            </a>
-
-            <a href="">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 512 512"
-                class="w-6 h-6"
-                fill="#808080"
-              >
-                <path
-                  d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48L48 64zM0 176L0 384c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-208L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"
-                />
-              </svg>
-            </a>
-
-            <a href="">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 512 512"
-                class="w-6 h-6"
-                fill="#808080"
-              >
-                <path
-                  d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"
-                />
-              </svg>
-            </a>
-
-            <a href="">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 640 512"
-                class="w-6 h-6"
-                fill="#808080"
-              >
-                <path
-                  d="M524.5 69.8a1.5 1.5 0 0 0 -.8-.7A485.1 485.1 0 0 0 404.1 32a1.8 1.8 0 0 0 -1.9 .9 337.5 337.5 0 0 0 -14.9 30.6 447.8 447.8 0 0 0 -134.4 0 309.5 309.5 0 0 0 -15.1-30.6 1.9 1.9 0 0 0 -1.9-.9A483.7 483.7 0 0 0 116.1 69.1a1.7 1.7 0 0 0 -.8 .7C39.1 183.7 18.2 294.7 28.4 404.4a2 2 0 0 0 .8 1.4A487.7 487.7 0 0 0 176 479.9a1.9 1.9 0 0 0 2.1-.7A348.2 348.2 0 0 0 208.1 430.4a1.9 1.9 0 0 0 -1-2.6 321.2 321.2 0 0 1 -45.9-21.9 1.9 1.9 0 0 1 -.2-3.1c3.1-2.3 6.2-4.7 9.1-7.1a1.8 1.8 0 0 1 1.9-.3c96.2 43.9 200.4 43.9 295.5 0a1.8 1.8 0 0 1 1.9 .2c2.9 2.4 6 4.9 9.1 7.2a1.9 1.9 0 0 1 -.2 3.1 301.4 301.4 0 0 1 -45.9 21.8 1.9 1.9 0 0 0 -1 2.6 391.1 391.1 0 0 0 30 48.8 1.9 1.9 0 0 0 2.1 .7A486 486 0 0 0 610.7 405.7a1.9 1.9 0 0 0 .8-1.4C623.7 277.6 590.9 167.5 524.5 69.8zM222.5 337.6c-29 0-52.8-26.6-52.8-59.2S193.1 219.1 222.5 219.1c29.7 0 53.3 26.8 52.8 59.2C275.3 311 251.9 337.6 222.5 337.6zm195.4 0c-29 0-52.8-26.6-52.8-59.2S388.4 219.1 417.9 219.1c29.7 0 53.3 26.8 52.8 59.2C470.7 311 447.5 337.6 417.9 337.6z"
-                />
-              </svg>
-            </a>
+           <?php } ?>
           </div>
         </div>
+        <!-- End Content  -->
       </section>
-      <!-- end right side bar  -->
+      <!-- End Main Content  -->
 
-      <!-- start Sign up  -->
-      <section
-        id="modal"
-        class="grid items-center justify-center fixed inset-0 hidden  w-full h-auto lg:w-[30%] lg:h-[70%] bg-white  bg-white mx-auto mt-14 shadow-lg shadow-[#DBD7D2]/80 rounded-lg"
-      >
-        <div class="grid gap-6 p-6">
-         
+<!-- Start Right Sidebar  -->
+<aside
+  class="hidden md:block col-span-2 sticky top-0 h-screen border-l p-8"
+>
+  <div class="w-[55%] flex flex-col justify-between h-full">
+    <div class="grid gap-y-4">
+      <h1 class="font-bold">Your Profile</h1>
+      <img
+        class="w-full h-40 bg-cover bg-center object-cover rounded-lg"
+        src="https://images.unsplash.com/photo-1622562112230-c629f2152a4d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        alt=""
+      />
 
-          <h1 class="text-center font-semibold text-3xl text-[#6F00FF]">
-            Create Your Account
-          </h1>
+      <div>
+        <span class="badge bg-green-500 text-white">Active</span>
+        <p class="font-semibold mb-4">Saung Eaindray Min</p>
+        <p>saung@gmail.com</p>
+        <p>+959951180654</p>
+      </div>
+    </div>
+    <div class="grid gap-y-4">
+      <h1 class="font-bold">Subscribe to Mono</h1>
+      <p class="text-xs">
+        Sign up now to get access to the library of members-only issues.
+      </p>
 
-          <form action="index.php" method="POST">
-            <div class="grid gap-6">
+      <button
+      class="p-2 bg-[#6F00FF] rounded-lg text-center text-white"
+      id="openModal"
+    >
+      Sign Up
+    </button>
+    <button
+      id="loginOpenModal"
+      class="p-2 bg-[#DBD7D2] rounded-lg text-center text-[#6F00FF]"
+    >
+      Log In
+    </button>
+    </div>
+  </div>
+</aside>
+<!-- End Right Sidebar  -->
 
-
-            
-              <input
-                type="text"
-                id="name"
-                name="Signupname"
-                placeholder="Enter your name"
-                class="outline-none border-b-[2px] border-[#6F00FF] p-2"
-              />
-
-              <?php
-              if ($valcount == 1){
-                echo "<span>Email is already exist<span>";
-              }
-              ?>
-              <input
-                id="email"
-                name="Signupemail"
-                type="email"
-                placeholder="Enter your Email"
-                class="outline-none border-b-[2px] border-[#6F00FF] p-2"
-              />
-
-              
-              <input
-                type="password"
-                id="password"
-                name="Signuppassword"
-                placeholder="Enter your Password"
-                class="outline-none border-b-[2px] border-[#6F00FF] p-2"
-              />
-            </div>
-
-            <input
-           
-            class="p-2 text-lg mt-8 text-center w-full font-semibold bg-[#6F00FF] rounded-lg text-white hover:bg-[#6F00FF]/60"
-            type="submit"
-            name="Signup"
-
+ <!-- start Sign up  -->
+<section
+  id="modal"
+  class="grid items-center justify-center fixed inset-0 hidden  w-full h-auto lg:w-[30%] lg:h-[70%] bg-white  bg-white mx-auto mt-14 shadow-lg shadow-[#DBD7D2]/80 rounded-lg"
+>
+       <div >
+        <span
+          class="flex items-center text-lg font-semibold text-slate-300"
+          ><div class="h-px w-3 me-1 "></div>
+          Add New User</span
+        >
+        <form
+          action="index.php"
+          method="POST"
+          class="grid gap-y-2 mt-2  p-4 rounded-lg border border-slate-800"
+        >
+          <label
+            class="cursor-pointer  text-xl text-center font-semibold border-dotted border-2 border-slate-600 p-12 rounded-md mb-1"
           >
-          </form>
+            Upload Image
+            <input type="file" class="hidden" name="UserImage" />
+          </label>
+
+          <label for="">Name</label>
+          <input
+            type="text"
+            name="UserName"
+            class="py-1 focus:outline-none bg-transparent border-b mb-1 border-slate-300"
+          />
+
+          <label for="">Email</label>
+          <input
+            type="email"
+            name="UserEmail"
+            class="py-1 focus:outline-none bg-transparent border-b mb-1 border-slate-300"
+          />
 
           
-           
+
+          <label for="">Password</label>
+          <input
+            type="password"
+            name="UserPassword"
+            class="py-1 focus:outline-none bg-transparent border-b mb-1 border-slate-300"
+          />
+
+          <div class="flex justify-between">
+          <input
+            type="submit"
+            name="UserSubmit"
+            class="btn btn-sm w-fit ms-auto block mt-2 focus:outline-none"
+          />
+
           <button
             id="closeModal"
-            class="p-2 text-lg text-center font-semibold bg-[#DBD7D2] hover:bg-[#DBD7D2]/50 rounded-lg text-[#6F00FF] shadow-lg"
-          >
-            Cancel
+            class="btn btn-sm w-fit ms-auto block mt-2 focus:outline-none"
+              >
+             Cancel
           </button>
-        </div>
-      </section>
+          </div>
+        </form>
+      </div>
+</section>
 
-      <!-- end sign up -->
+<!-- end sign up -->
 
-      <!-- start sign in  -->
-      <section
-        id="loginModal"
-        class="grid items-center justify-center fixed inset-0 hidden  w-full h-auto lg:w-[30%] lg:h-[70%] bg-white  bg-white mx-auto mt-14 shadow-lg shadow-[#DBD7D2]/80 rounded-lg"
-      >
-        <div class="grid gap-6 p-6">
-          <h1 class="text-center font-semibold text-3xl text-[#6F00FF]">
-            Log In Your Account
-          </h1>
+     <!-- start sign in  -->
+     <section
+  id="loginModal"
+  class="grid items-center justify-center fixed inset-0 hidden w-full h-auto lg:w-[30%] lg:h-[70%] bg-white  bg-white mx-auto mt-14 shadow-lg shadow-[#DBD7D2]/80 rounded-lg"
+>
+<div  >
+        <span
+          class="flex items-center text-lg font-semibold "
+          ><div class="h-px w-3 me-1 "></div>
+          Log In to your Account</span
+        >
+        <form
+          action="index.php"
+          method="POST"
+          class="grid gap-y-2 mt-2  p-4 rounded-lg border  border-slate-800"
+        >
 
-          <form action="index.php" method="POST">
-            <div class="grid gap-6">
+          <label for="">Name</label>
+          <input
+            type="text"
+            name="Name"
+            class="py-1 focus:outline-none bg-transparent border-b mb-1 border-slate-300"
+          />
 
-            <?php
-            $result = ($count == 1) ? "<span>Correct Email</span>" : "<span>Incorrect Email</span>";
-            echo $result;
-            ?>
-              <input
-                id="email"
-                name="Signinemail"
-                type="email"
-                placeholder="Enter your Email"
-                class="outline-none border-b-[2px] border-[#6F00FF] p-2"
-              />
-
-            <?php
-            $result = ($count == 1) ? "<span>Correct Password</span>" : "<span>Incorrect Password</span>";
-            echo $result;
-            ?>
-              <input
-                type="password"
-                id="signinpassword"
-                name="password"
-                placeholder="Enter your Password"
-                class="outline-none border-b-[2px] border-[#6F00FF] p-2"
-              />
-            </div>
-
-            <input
-           
-            class="p-2 text-lg text-center mt-8 w-full font-semibold bg-[#6F00FF] rounded-lg text-white hover:bg-[#6F00FF]/60"
-            type="submit"
-            name="Signin"
-
-          >
-          </form>
+          <label for="">Email</label>
+          <input
+            type="email"
+            name="Email"
+            class="py-1 focus:outline-none bg-transparent border-b mb-1 border-slate-300"
+          />
 
           
+
+          <label for="">Password</label>
+          <input
+            type="password"
+            name="Password"
+            class="py-1 focus:outline-none bg-transparent border-b mb-1 border-slate-300"
+          />
+
+          <div class="flex justify-between">
+          <input
+            type="submit"
+            name="Submit"
+            class="btn btn-sm w-fit ms-auto block mt-2 focus:outline-none"
+          />
+
           <button
-            id="loginCloseModal"
-            class="p-2 text-lg   text-center font-semibold bg-[#DBD7D2] hover:bg-[#DBD7D2]/50 rounded-lg text-[#6F00FF] shadow-lg"
-          >
-            Cancel
+            id="closeModal"
+            class="btn btn-sm w-fit ms-auto block mt-2 focus:outline-none"
+              >
+             Cancel
           </button>
-        </div>
-      </section>
+          </div>
+        </form>
+      </div>
+</section>
 
-      <!-- end log in  -->
+<!-- end log in  -->
     </main>
-
-    
     <script src="./script.js" type="text/javascript"></script>
   </body>
 </html>

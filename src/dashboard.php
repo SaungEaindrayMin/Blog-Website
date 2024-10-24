@@ -319,8 +319,8 @@ $AccountCount = mysqli_num_rows($AccountQuery);
                       <td class="py-2 px-4"><?php echo $Accountdata['AccountEmail'];?></td>
                       <td class="py-2 px-4"><?php echo $Accountdata['AccountRole'];?></td>
                       <td class="py-2 px-4 flex gap-4">
-                        <a href="AccountControl.php?AccountID=<?php echo $Accountdata['AccountID'];?>" class="p-1 px-3 text-white bg-[#FE0000] rounded-lg">Edit</a>
-                        <a href="dashboard.php?Account_ID_to_delete=<?php echo $Accountdata['AccountID'];?>" class="p-1 px-3 text-white bg-[#008000] rounded-lg">Delete</a>
+                        <a href="AccountControl.php?AccountID=<?php echo $Accountdata['AccountID'];?>" class="p-1 px-3 text-white  bg-[#008000] rounded-lg">Edit</a>
+                        <a href="dashboard.php?Account_ID_to_delete=<?php echo $Accountdata['AccountID'];?>" onclick="return confirm('Are you sure you want to delete?')" class="p-1 px-3 text-white bg-[#FE0000] rounded-lg">Delete</a>
                       </td>
                     </tr>
                     <?php } ?>
